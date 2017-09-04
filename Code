@@ -1,0 +1,155 @@
+package MActionEventDemo;
+
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+
+public class CashSystem extends JFrame{
+	
+	public static final int WIDTH=400,HIGHT=400;
+	private JLabel showResult;
+	private JButton confirm,cancel;
+	private JTextField price,number;
+	private double total=0.0;
+	private JComboBox method;
+	private JTextArea showArea;
+	private JScrollPane jShowArea;
+
+ 
+	public void startFrame()
+	{
+		this.setTitle("商场收银系统");
+		Dimension d=this.getToolkit().getScreenSize();
+		this.setLocation((d.width-WIDTH)/2, (d.height-HIGHT)/2);
+		this.setSize(WIDTH, HIGHT);
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setResizable(false);
+		
+		JPanel v1=new JPanel();
+		BoxLayout b1=new BoxLayout(v1,BoxLayout.Y_AXIS);
+		v1.setLayout(b1);
+		v1.add(new JLabel("单价："));
+		v1.add(new JLabel("数量："));
+		v1.add(new JLabel("计算方式："));
+		JPanel v2=new JPanel();
+		BoxLayout b2=new BoxLayout(v2,BoxLayout.Y_AXIS);
+		v2.setLayout(b2);
+		price=new JTextField(15);
+		number=new JTextField(15);
+		String []items={"正常收费","打8折","打5折","满300返100"};
+		method=new JComboBox(items);
+		v2.add(price);
+		v2.add(number);
+		v2.add(method);
+		JPanel v3=new JPanel();
+		BoxLayout b3=new BoxLayout(v3,BoxLayout.Y_AXIS);
+		v3.setLayout(b3);
+		confirm=new JButton("确定");
+		cancel=new JButton("重置");
+		v3.add(confirm);
+		v3.add(cancel);
+		JPanel h=new JPanel();
+		BoxLayout b4=new BoxLayout(h,BoxLayout.X_AXIS);
+		h.setLayout(b4);
+		h.add(v1);
+		h.add(v2);
+		h.add(v3);
+		showArea=new JTextArea(6,15);
+		jShowArea =new JScrollPane(showArea);
+        showResult=new JLabel("显示总价");
+        confirm.addActionListener(new ConfirmHanlder());
+        cancel.addActionListener(new ActionListener()
+        {
+        	public void actionPerformed(ActionEvent e)
+        	{
+        		price.setText(null);
+        		number.setText(null);
+        		showArea.setText(null);
+        		showResult.setText(null);
+        	}
+        });
+        this.add(h,"North");
+        this.add(jShowArea,"Center");
+        this.add(showResult,"South");
+        
+        this.setVisible(true);
+        
+	
+		
+		
+		
+		
+	}
+	class ConfirmHanlder implements ActionListener
+	{
+		double totalPrice=0.0;
+		public void actionPerformed(ActionEvent e)
+		{
+			String condition="正常收费";
+			
+			switch(method.getSelectedIndex())
+			{
+			case 0:
+				totalPrice=getCash(1);
+				condition="正常收费";
+				break;
+			case 1:
+				totalPrice=getCash(0.8);
+				condition="打8折！";
+				break;
+			case 2:
+				totalPrice=getCash(0.5);
+				condition="打5折！";
+				break;
+			case 3:
+				totalPrice=getCash(300,100);
+				condition="满300返100";
+				break;
+				
+			}
+			total =total+totalPrice;
+			showArea.append(condition+"--单价："+price.getText()+"数量："+number.getText()+"合计："+totalPrice+"\n");
+			showResult.setFont(new Font("楷体",Font.ITALIC,20));
+			showResult.setText("总计："+total+"元");
+			
+			
+		}
+		private double getCash(double rate)
+		{
+			return Double.parseDouble(price.getText())*Integer.parseInt(number.getText())*rate;
+		}
+		private double getCash(int MoneyCondition,int MoneyReturn)
+		{
+		 double money;
+		 money=Double.parseDouble(price.getText())*Integer.parseInt(number.getText());
+		 if(money>MoneyCondition)
+		 {
+			 return money-(int)money/MoneyCondition*MoneyReturn;
+			 
+		 }
+		 else
+		 {
+			 return money;
+		 }
+		}
+	}
+	
+	public static void main(String[] args) {
+		CashSystem cs=new CashSystem();
+		cs.startFrame();
+		// TODO 自动生成的方法存根
+
+	}
+
+}
